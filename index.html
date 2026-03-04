@@ -1519,7 +1519,7 @@ function proceedToPayment() {
 // Example: India 98765 43210 → 919876543210
 // ─────────────────────────────────────────────
 function sendOrderWhatsApp(items, total, shipping, paymentId) {
-  const OWNER_NUMBER = '9391714623'; // ← CHANGE THIS to your number
+  const OWNER_NUMBER = '919391714623'; // ← CHANGE THIS to your number
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
   const delivery = subtotal >= 499 ? 0 : 40;
