@@ -35,6 +35,15 @@
     touch-action: manipulation;
   }
 
+  /* Make sure all child elements inside buttons pass clicks through */
+  button *, .add-btn *, .checkout-btn *, .ship-btn *,
+  .ship-btn-back *, .google-btn *, .signout-btn *,
+  .promo-btn *, .btn-primary *, .btn-outline *, .qty-btn *,
+  .cat-pill *, .nav-item *, .account-menu-item * {
+    pointer-events: none;
+    user-select: none;
+  }
+
   html { scroll-behavior: smooth; }
 
   body {
