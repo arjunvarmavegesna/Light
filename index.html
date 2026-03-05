@@ -21,30 +21,20 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  /* ── PREVENT TEXT SELECTION ON TAP (mobile fix) ── */
-  button, .cat-pill, .product-card, .add-btn, .nav-item,
-  .account-menu-item, .cart-item, .order-card, .checkout-btn,
-  .ship-btn, .ship-btn-back, .google-btn, .signout-btn,
-  .promo-btn, .btn-primary, .btn-outline, .qty-btn,
-  .special-card, .review-card, .drawer-handle, .view-all,
-  .product-fav, .offer-strip, .benefit-item {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    user-select: none;
+  /* ── MOBILE TAP FIX ── */
+  * {
     -webkit-tap-highlight-color: transparent;
+  }
+  button, [role="button"],
+  .cat-pill, .nav-item, .add-btn, .qty-btn,
+  .checkout-btn, .ship-btn, .ship-btn-back,
+  .google-btn, .signout-btn, .promo-btn,
+  .btn-primary, .btn-outline, .account-menu-item,
+  .product-fav, .view-all, .drawer-handle {
     touch-action: manipulation;
-  }
-
-  /* Make sure all child elements inside buttons pass clicks through */
-  button *, .add-btn *, .google-btn *, .signout-btn *,
-  .promo-btn *, .btn-primary *, .btn-outline *, .qty-btn *,
-  .cat-pill *, .nav-item *, .account-menu-item * {
-    pointer-events: none;
-    user-select: none;
-  }
-  /* ship-btn and checkout-btn are divs so they handle clicks naturally */
-  .ship-btn, .ship-btn-back, .checkout-btn {
     cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   html { scroll-behavior: smooth; }
@@ -960,10 +950,10 @@
       <input class="form-input" id="ship_note" type="text" placeholder="e.g. Call before delivery, leave at door…" />
     </div>
 
-    <div class="ship-btn" id="continueToReviewBtn" onclick="goToReview()" role="button" tabindex="0">
+    <div class="ship-btn" id="continueToReviewBtn" ontouchstart="goToReview()" onclick="goToReview()" role="button" tabindex="0">
       Continue to Review →
     </div>
-    <div class="ship-btn-back" onclick="backToCart()" role="button" tabindex="0" style="margin-top:0.5rem">
+    <div class="ship-btn-back" ontouchstart="backToCart()" onclick="backToCart()" role="button" tabindex="0" style="margin-top:0.5rem">
       ← Back to Cart
     </div>
   </div>
@@ -986,10 +976,10 @@
       </div>
     </div>
 
-    <div class="ship-btn" onclick="proceedToPayment()" role="button" tabindex="0">
+    <div class="ship-btn" ontouchstart="proceedToPayment()" onclick="proceedToPayment()" role="button" tabindex="0">
       💳 Pay Now
     </div>
-    <div class="ship-btn-back" onclick="backToAddress()" role="button" tabindex="0">
+    <div class="ship-btn-back" ontouchstart="backToAddress()" onclick="backToAddress()" role="button" tabindex="0">
       ← Edit Address
     </div>
   </div>
@@ -1206,7 +1196,7 @@ function openCart() {
         <div class="total-row"><span>Subtotal</span><span>₹${subtotal}</span></div>
         <div class="total-row"><span>Delivery</span><span>${delivery === 0 ? '<span style="color:green">FREE</span>' : '₹' + delivery}</span></div>
         <div class="total-row grand"><span>Total</span><span>₹${subtotal + delivery}</span></div>
-        <div class="checkout-btn" onclick="openShipping()" role="button" tabindex="0">Proceed to Checkout 📍</div>
+        <div class="checkout-btn" ontouchstart="openShipping()" onclick="openShipping()" role="button" tabindex="0">Proceed to Checkout 📍</div>
       </div>
     `;
   }
@@ -1488,6 +1478,7 @@ function validateShippingForm() {
 }
 
 function goToReview() {
+  if (goToReview._busy) return; goToReview._busy = true; setTimeout(() => goToReview._busy = false, 1000);
   if (!validateShippingForm()) {
     // Scroll to first error
     const firstErr = document.querySelector('.form-input.error');
@@ -1535,6 +1526,7 @@ function goToReview() {
 }
 
 function proceedToPayment() {
+  if (proceedToPayment._busy) return; proceedToPayment._busy = true; setTimeout(() => proceedToPayment._busy = false, 2000);
   document.getElementById('shippingDrawer').classList.remove('open');
   document.getElementById('overlay').classList.remove('open');
   startPayment();
