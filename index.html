@@ -36,12 +36,15 @@
   }
 
   /* Make sure all child elements inside buttons pass clicks through */
-  button *, .add-btn *, .checkout-btn *, .ship-btn *,
-  .ship-btn-back *, .google-btn *, .signout-btn *,
+  button *, .add-btn *, .google-btn *, .signout-btn *,
   .promo-btn *, .btn-primary *, .btn-outline *, .qty-btn *,
   .cat-pill *, .nav-item *, .account-menu-item * {
     pointer-events: none;
     user-select: none;
+  }
+  /* ship-btn and checkout-btn are divs so they handle clicks naturally */
+  .ship-btn, .ship-btn-back, .checkout-btn {
+    cursor: pointer;
   }
 
   html { scroll-behavior: smooth; }
@@ -957,12 +960,12 @@
       <input class="form-input" id="ship_note" type="text" placeholder="e.g. Call before delivery, leave at door…" />
     </div>
 
-    <button class="ship-btn" id="continueToReviewBtn" onclick="goToReview()">
+    <div class="ship-btn" id="continueToReviewBtn" onclick="goToReview()" role="button" tabindex="0">
       Continue to Review →
-    </button>
-    <button class="ship-btn-back" onclick="backToCart()" style="margin-top:0.5rem">
+    </div>
+    <div class="ship-btn-back" onclick="backToCart()" role="button" tabindex="0" style="margin-top:0.5rem">
       ← Back to Cart
-    </button>
+    </div>
   </div>
 
   <!-- PAGE 2: Review & Confirm -->
@@ -983,12 +986,12 @@
       </div>
     </div>
 
-    <button class="ship-btn" onclick="proceedToPayment()">
+    <div class="ship-btn" onclick="proceedToPayment()" role="button" tabindex="0">
       💳 Pay Now
-    </button>
-    <button class="ship-btn-back" onclick="backToAddress()">
+    </div>
+    <div class="ship-btn-back" onclick="backToAddress()" role="button" tabindex="0">
       ← Edit Address
-    </button>
+    </div>
   </div>
 </div>
 
@@ -1203,7 +1206,7 @@ function openCart() {
         <div class="total-row"><span>Subtotal</span><span>₹${subtotal}</span></div>
         <div class="total-row"><span>Delivery</span><span>${delivery === 0 ? '<span style="color:green">FREE</span>' : '₹' + delivery}</span></div>
         <div class="total-row grand"><span>Total</span><span>₹${subtotal + delivery}</span></div>
-        <button class="checkout-btn" onclick="openShipping()">Proceed to Checkout 📍</button>
+        <div class="checkout-btn" onclick="openShipping()" role="button" tabindex="0">Proceed to Checkout 📍</div>
       </div>
     `;
   }
@@ -1286,19 +1289,35 @@ renderProducts();
 let shippingData = {};
 
 function openShipping() {
+  // ── MANDATORY LOGIN CHECK ──
+  if (!window.currentUser) {
+    // Close cart and show login
+    document.getElementById('cartDrawer').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
+
+    // Show login prompt toast first
+    showToast('🔐 Please sign in to place your order!');
+
+    // Open account drawer after short delay
+    setTimeout(() => {
+      if (window.openAccount) {
+        window.openAccount();
+      }
+    }, 800);
+    return;
+  }
+
   document.getElementById('cartDrawer').classList.remove('open');
   document.getElementById('shippingPage1').style.display = 'block';
   document.getElementById('shippingPage2').style.display = 'none';
   document.getElementById('stepAddress').className = 'shipping-step active';
   document.getElementById('stepPayment').className = 'shipping-step';
 
-  // Pre-fill name from Google account if logged in
+  // Pre-fill name & email from Google account
   const user = window.currentUser;
-  if (user) {
-    const nameField = document.getElementById('ship_name');
-    if (nameField && !nameField.value) {
-      nameField.value = user.displayName || '';
-    }
+  const nameField = document.getElementById('ship_name');
+  if (nameField && !nameField.value) {
+    nameField.value = user.displayName || '';
   }
 
   document.getElementById('overlay').classList.add('open');
